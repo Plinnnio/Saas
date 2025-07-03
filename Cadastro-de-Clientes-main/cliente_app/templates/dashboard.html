@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Hoje</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Semana</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Mês</button>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card card-dashboard text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Clientes Ativos</h5>
+                <h2 class="card-text">{{ clientes_ativos }}</h2>
+                <p class="card-text"><small>+5% desde o último mês</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-dashboard text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Contratos Ativos</h5>
+                <h2 class="card-text">42</h2>
+                <p class="card-text"><small>+12% desde o último mês</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-dashboard text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Faturas Pendentes</h5>
+                <h2 class="card-text">18</h2>
+                <p class="card-text"><small>3 vencidas</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-dashboard text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Consumo Médio</h5>
+                <h2 class="card-text">1.2 MW</h2>
+                <p class="card-text"><small>-2% desde o último mês</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card card-dashboard">
+            <div class="card-header">
+                Consumo de Energia (últimos 6 meses)
+            </div>
+            <div class="card-body">
+                <canvas id="consumoChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-dashboard">
+            <div class="card-header">
+                Distribuição por Submercado
+            </div>
+            <div class="card-body">
+                <canvas id="submercadoChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card card-dashboard">
+            <div class="card-header">
+                Últimos Clientes Cadastrados
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Data Cadastro</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in ultimos_clientes %}
+                            <tr>
+                                <td>{{ cliente.id }}</td>
+                                <td>{{ cliente.nome }}</td>
+                                <td>{{ cliente.data_cadastro }}</td>
+                                <td>{{ cliente.tipo_unidade if cliente.tipo_unidade else '-' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ 'success' if cliente.status == 'ATIVO' else 'secondary' }}">
+                                        {{ cliente.status if cliente.status else 'ATIVO' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">Nenhum cliente cadastrado</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-dashboard">
+            <div class="card-header">
+                Atividades Recentes
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <small class="text-muted">Hoje, 10:30</small><br>
+                        <strong>Novo cliente</strong> cadastrado: Energia Plus
+                    </li>
+                    <li class="list-group-item">
+                        <small class="text-muted">Hoje, 09:15</small><br>
+                        <strong>Contrato</strong> atualizado: Comercial LTDA
+                    </li>
+                    <li class="list-group-item">
+                        <small class="text-muted">Ontem, 16:45</small><br>
+                        <strong>Fatura</strong> gerada para Industrial S/A
+                    </li>
+                    <li class="list-group-item">
+                        <small class="text-muted">Ontem, 14:20</small><br>
+                        <strong>Cliente</strong> inativado: Comércio & Cia
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function() {
+        // Gráfico de consumo
+        var ctxConsumo = document.getElementById('consumoChart').getContext('2d');
+        var consumoChart = new Chart(ctxConsumo, {
+            type: 'line',
+            data: {
+                labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
+                datasets: [{
+                    label: 'Consumo (MW)',
+                    data: [12, 19, 15, 17, 14, 16],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Gráfico de submercados
+        var ctxSubmercado = document.getElementById('submercadoChart').getContext('2d');
+        var submercadoChart = new Chart(ctxSubmercado, {
+            type: 'doughnut',
+            data: {
+                labels: ['SUDESTE', 'SUL', 'NORDESTE', 'NORTE'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

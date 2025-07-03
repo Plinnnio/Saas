@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Editar Cliente</h1>
+    
+    <form method="POST" action="{{ url_for('editar_cliente', id=cliente.id) }}">
+        <div class="progress mb-4">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        
+        <ul class="nav nav-tabs mb-4" id="clientTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="dados-basicos-tab" data-toggle="tab" href="#dados-basicos">Dados Básicos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="dados-comerciais-tab" data-toggle="tab" href="#dados-comerciais">Dados Comerciais</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="dados-energia-tab" data-toggle="tab" href="#dados-energia">Dados de Energia</a>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="clientTabsContent">
+            <div class="tab-pane fade show active" id="dados-basicos">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label for="nome">Nome da Unidade</label>
+                            <input type="text" class="form-control" id="nome" name="nome" value="{{ cliente.nome }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ</label>
+                            <input type="text" class="form-control cnpj-mask" id="cnpj" name="cnpj" value="{{ cliente.cnpj }}" placeholder="00.000.000/0000-00">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ cliente.email }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="text" class="form-control phone-mask" id="telefone" name="telefone" value="{{ cliente.telefone }}" placeholder="(00) 00000-0000">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="tipo_unidade">Matriz ou Filial</label>
+                            <select class="form-control" id="tipo_unidade" name="tipo_unidade">
+                                <option value="MATRIZ" {% if cliente.tipo_unidade == 'MATRIZ' %}selected{% endif %}>Matriz</option>
+                                <option value="FILIAL" {% if cliente.tipo_unidade == 'FILIAL' %}selected{% endif %}>Filial</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="endereco">Endereço</label>
+                            <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente.endereco }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="numero">Número</label>
+                            <input type="text" class="form-control" id="numero" name="numero" value="{{ cliente.numero }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="complemento">Complemento</label>
+                            <input type="text" class="form-control" id="complemento" name="complemento" value="{{ cliente.complemento }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="bairro">Bairro</label>
+                            <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente.bairro }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente.cidade }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="uf">UF</label>
+                            <select class="form-control" id="uf" name="uf">
+                                <option value="">Selecione</option>
+                                {% for uf in ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] %}
+                                <option value="{{ uf }}" {% if cliente.uf == uf %}selected{% endif %}>{{ uf }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="cep">CEP</label>
+                            <input type="text" class="form-control cep-mask" id="cep" name="cep" value="{{ cliente.cep }}" placeholder="00000-000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="ATIVO" {% if cliente.status == 'ATIVO' %}selected{% endif %}>ATIVO</option>
+                                <option value="INATIVO" {% if cliente.status == 'INATIVO' %}selected{% endif %}>INATIVO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="grupo">Grupo</label>
+                            <input type="text" class="form-control" id="grupo" name="grupo" value="{{ cliente.grupo }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="dhc">DHC</label>
+                            <input type="text" class="form-control" id="dhc" name="dhc" value="{{ cliente.dhc }}" placeholder="Informe o DHC">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-right mt-3">
+                    <button type="button" class="btn btn-primary next-tab" data-next="#dados-comerciais-tab">Próximo</button>
+                </div>
+            </div>
+            
+            <div class="tab-pane fade" id="dados-comerciais">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="agente">Agente</label>
+                            <input type="text" class="form-control" id="agente" name="agente" value="{{ cliente.agente }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="codigo_agente">Código de Agente</label>
+                            <input type="text" class="form-control" id="codigo_agente" name="codigo_agente" value="{{ cliente.codigo_agente }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="perfil">Perfil</label>
+                            <input type="text" class="form-control" id="perfil" name="perfil" value="{{ cliente.perfil }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="codigo_perfil">Código de Perfil</label>
+                            <input type="text" class="form-control" id="codigo_perfil" name="codigo_perfil" value="{{ cliente.codigo_perfil }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="demanda">Demanda (kW)</label>
+                            <input type="number" step="0.01" class="form-control" id="demanda" name="demanda" value="{{ cliente.demanda }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="submercado">Submercado</label>
+                    <select class="form-control" id="submercado" name="submercado">
+                        <option value="">Selecione</option>
+                        <option value="SUDESTE" {% if cliente.submercado == 'SUDESTE' %}selected{% endif %}>SUDESTE</option>
+                        <option value="SUL" {% if cliente.submercado == 'SUL' %}selected{% endif %}>SUL</option>
+                        <option value="NORTE" {% if cliente.submercado == 'NORTE' %}selected{% endif %}>NORTE</option>
+                        <option value="NORDESTE" {% if cliente.submercado == 'NORDESTE' %}selected{% endif %}>NORDESTE</option>
+                    </select>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="#dados-basicos-tab">Anterior</button>
+                    <button type="button" class="btn btn-primary next-tab" data-next="#dados-energia-tab">Próximo</button>
+                </div>
+            </div>
+            
+            <div class="tab-pane fade" id="dados-energia">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="medidor">Medidor</label>
+                            <input type="text" class="form-control" id="medidor" name="medidor" value="{{ cliente.medidor }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="uc_instalacao">UC Instalação</label>
+                            <input type="text" class="form-control" id="uc_instalacao" name="uc_instalacao" value="{{ cliente.uc_instalacao }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="classe">Classe</label>
+                            <select class="form-control" id="classe" name="classe">
+                                <option value="">Selecione</option>
+                                <option value="LIVRE" {% if cliente.classe == 'LIVRE' %}selected{% endif %}>Livre</option>
+                                <option value="ESPECIAL" {% if cliente.classe == 'ESPECIAL' %}selected{% endif %}>Especial</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="tensao">Tensão</label>
+                            <select class="form-control" id="tensao" name="tensao">
+                                <option value="">Selecione</option>
+                                <option value="A1" {% if cliente.tensao == 'A1' %}selected{% endif %}>A1 - 230 kV ou mais</option>
+                                <option value="A2" {% if cliente.tensao == 'A2' %}selected{% endif %}>A2 - 88 kV a 138 kV</option>
+                                <option value="A3" {% if cliente.tensao == 'A3' %}selected{% endif %}>A3 - 69 kV</option>
+                                <option value="A3a" {% if cliente.tensao == 'A3a' %}selected{% endif %}>A3a - 30 kV a 44 kV</option>
+                                <option value="A4" {% if cliente.tensao == 'A4' %}selected{% endif %}>A4 - 2,3 kV a 25 kV</option>
+                                <option value="AS" {% if cliente.tensao == 'AS' %}selected{% endif %}>AS - Baixa Tensão</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ cliente.observacoes }}</textarea>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="#dados-comerciais-tab">Anterior</button>
+                    <div>
+                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                        <a href="{{ url_for('listar_clientes') }}" class="btn btn-danger">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(document).ready(function(){
+    // Máscaras para os campos
+    $('.cnpj-mask').mask('00.000.000/0000-00', {reverse: true});
+    $('.phone-mask').mask('(00) 00000-0000');
+    $('.cep-mask').mask('00000-000');
+    
+    // Navegação entre abas
+    $('.next-tab').click(function(){
+        $($(this).data('next')).tab('show');
+        updateProgressBar();
+    });
+    
+    $('.prev-tab').click(function(){
+        $($(this).data('prev')).tab('show');
+        updateProgressBar();
+    });
+    
+    // Atualiza a barra de progresso
+    function updateProgressBar() {
+        const activeTab = $('.tab-pane.active');
+        const totalTabs = $('.tab-pane').length;
+        const currentTabIndex = $('.tab-pane').index(activeTab);
+        const progress = ((currentTabIndex + 1) / totalTabs) * 100;
+        
+        $('.progress-bar').css('width', progress + '%')
+                          .attr('aria-valuenow', progress);
+    }
+    
+    // Atualiza a barra de progresso quando muda de aba
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(){
+        updateProgressBar();
+    });
+    
+    // Inicializa a barra de progresso
+    updateProgressBar();
+});
+</script>
+{% endblock %}
