@@ -21,235 +21,388 @@
             <li class="nav-item">
                 <a class="nav-link" id="dados-energia-tab" data-toggle="tab" href="#dados-energia">Dados de Energia</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="migracao-api-tab" data-toggle="tab" href="#migracao-api">Migração API</a>
+            </li>
         </ul>
         
         <div class="tab-content" id="clientTabsContent">
+            <!-- Dados Básicos -->
             <div class="tab-pane fade show active" id="dados-basicos">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group required">
-                            <label for="nome">Nome da Unidade</label>
-                            <input type="text" class="form-control" id="nome" name="nome" required>
-                        </div>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-user"></i> Informações Básicas
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="cnpj">CNPJ</label>
-                            <input type="text" class="form-control cnpj-mask" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nome">Nome/Razão Social*</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" required value="{{ cliente.nome if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">Email*</label>
+                                    <input type="email" class="form-control" id="email" name="email" required value="{{ cliente.email if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="telefone">Telefone</label>
+                                    <input type="text" class="form-control phone-mask" id="telefone" name="telefone" value="{{ cliente.telefone if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cnpj">CNPJ/CPF</label>
+                                    <input type="text" class="form-control cnpj-mask" id="cnpj" name="cnpj" value="{{ cliente.cnpj if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="endereco">Endereço</label>
+                                    <input type="text" class="form-control" id="endereco" name="endereco" value="{{ cliente.endereco if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="numero">Número</label>
+                                    <input type="text" class="form-control" id="numero" name="numero" value="{{ cliente.numero if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="complemento">Complemento</label>
+                                    <input type="text" class="form-control" id="complemento" name="complemento" value="{{ cliente.complemento if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="bairro">Bairro</label>
+                                    <input type="text" class="form-control" id="bairro" name="bairro" value="{{ cliente.bairro if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="cidade">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade" name="cidade" value="{{ cliente.cidade if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="uf">UF</label>
+                                    <select class="form-control" id="uf" name="uf">
+                                        <option value="">Selecione</option>
+                                        {% for uf in ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] %}
+                                            <option value="{{ uf }}" {% if cliente and cliente.uf == uf %}selected{% endif %}>{{ uf }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="cep">CEP</label>
+                                    <input type="text" class="form-control cep-mask" id="cep" name="cep" value="{{ cliente.cep if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="grupo">Grupo</label>
+                                    <input type="text" class="form-control" id="grupo" name="grupo" value="{{ cliente.grupo if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="tipo_unidade">Tipo de Unidade</label>
+                                    <select class="form-control" id="tipo_unidade" name="tipo_unidade">
+                                        <option value="MATRIZ" {% if cliente and cliente.tipo_unidade == 'MATRIZ' %}selected{% endif %}>Matriz</option>
+                                        <option value="FILIAL" {% if cliente and cliente.tipo_unidade == 'FILIAL' %}selected{% endif %}>Filial</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="ATIVO" {% if not cliente or cliente.status == 'ATIVO' %}selected{% endif %}>Ativo</option>
+                                        <option value="INATIVO" {% if cliente and cliente.status == 'INATIVO' %}selected{% endif %}>Inativo</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group required">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="telefone">Telefone</label>
-                            <input type="text" class="form-control phone-mask" id="telefone" name="telefone" placeholder="(00) 00000-0000">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="tipo_unidade">Matriz ou Filial</label>
-                            <select class="form-control" id="tipo_unidade" name="tipo_unidade">
-                                <option value="MATRIZ">Matriz</option>
-                                <option value="FILIAL">Filial</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="endereco">Endereço</label>
-                            <input type="text" class="form-control" id="endereco" name="endereco">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="numero">Número</label>
-                            <input type="text" class="form-control" id="numero" name="numero">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="complemento">Complemento</label>
-                            <input type="text" class="form-control" id="complemento" name="complemento">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="bairro">Bairro</label>
-                            <input type="text" class="form-control" id="bairro" name="bairro">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="cidade">Cidade</label>
-                            <input type="text" class="form-control" id="cidade" name="cidade">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="uf">UF</label>
-                            <select class="form-control" id="uf" name="uf">
-                                <option value="">Selecione</option>
-                                {% for uf in ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] %}
-                                <option value="{{ uf }}">{{ uf }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="cep">CEP</label>
-                            <input type="text" class="form-control cep-mask" id="cep" name="cep" placeholder="00000-000">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="status">Status</label>
-                            <select class="form-control" id="status" name="status">
-                                <option value="ATIVO" selected>ATIVO</option>
-                                <option value="INATIVO">INATIVO</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="grupo">Grupo</label>
-                            <input type="text" class="form-control" id="grupo" name="grupo">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="dhc">DHC</label>
-                            <input type="text" class="form-control" id="dhc" name="dhc" placeholder="Informe o DHC">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="text-right mt-3">
+
+                <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-primary next-tab" data-next="#dados-comerciais-tab">Próximo</button>
                 </div>
             </div>
             
+            <!-- Dados Comerciais -->
             <div class="tab-pane fade" id="dados-comerciais">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="agente">Agente</label>
-                            <input type="text" class="form-control" id="agente" name="agente">
-                        </div>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-briefcase"></i> Informações Comerciais
                     </div>
-                    <div class="col-md-6">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="agente">Agente</label>
+                                    <input type="text" class="form-control" id="agente" name="agente" value="{{ cliente.agente if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigo_agente">Código Agente</label>
+                                    <input type="text" class="form-control" id="codigo_agente" name="codigo_agente" value="{{ cliente.codigo_agente if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="perfil">Perfil</label>
+                                    <input type="text" class="form-control" id="perfil" name="perfil" value="{{ cliente.perfil if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="codigo_perfil">Código Perfil</label>
+                                    <input type="text" class="form-control" id="codigo_perfil" name="codigo_perfil" value="{{ cliente.codigo_perfil if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="submercado">Submercado</label>
+                                    <select class="form-control" id="submercado" name="submercado">
+                                        <option value="SUDESTE" {% if cliente and cliente.submercado == 'SUDESTE' %}selected{% endif %}>Sudeste</option>
+                                        <option value="SUL" {% if cliente and cliente.submercado == 'SUL' %}selected{% endif %}>Sul</option>
+                                        <option value="NORDESTE" {% if cliente and cliente.submercado == 'NORDESTE' %}selected{% endif %}>Nordeste</option>
+                                        <option value="NORTE" {% if cliente and cliente.submercado == 'NORTE' %}selected{% endif %}>Norte</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="data_denuncia_contrato">Data Denúncia Contrato</label>
+                                    <input type="date" class="form-control" id="data_denuncia_contrato" name="data_denuncia_contrato" value="{{ cliente.data_denuncia_contrato if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="valor_multa_rescisoria">Valor Multa Rescisória (R$)</label>
+                                    <input type="number" step="0.01" class="form-control" id="valor_multa_rescisoria" name="valor_multa_rescisoria" value="{{ cliente.valor_multa_rescisoria if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="codigo_agente">Código de Agente</label>
-                            <input type="text" class="form-control" id="codigo_agente" name="codigo_agente">
+                            <label for="observacoes">Observações</label>
+                            <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ cliente.observacoes if cliente else '' }}</textarea>
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="perfil">Perfil</label>
-                            <input type="text" class="form-control" id="perfil" name="perfil">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="codigo_perfil">Código de Perfil</label>
-                            <input type="text" class="form-control" id="codigo_perfil" name="codigo_perfil">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="demanda">Demanda (kW)</label>
-                            <input type="number" step="0.01" class="form-control" id="demanda" name="demanda">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="submercado">Submercado</label>
-                    <select class="form-control" id="submercado" name="submercado">
-                        <option value="">Selecione</option>
-                        <option value="SUDESTE">SUDESTE</option>
-                        <option value="SUL">SUL</option>
-                        <option value="NORTE">NORTE</option>
-                        <option value="NORDESTE">NORDESTE</option>
-                    </select>
-                </div>
-                
-                <div class="d-flex justify-content-between mt-3">
+
+                <div class="d-flex justify-content-between">
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="#dados-basicos-tab">Anterior</button>
                     <button type="button" class="btn btn-primary next-tab" data-next="#dados-energia-tab">Próximo</button>
                 </div>
             </div>
             
+            <!-- Dados de Energia -->
             <div class="tab-pane fade" id="dados-energia">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="medidor">Medidor</label>
-                            <input type="text" class="form-control" id="medidor" name="medidor">
-                        </div>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-bolt"></i> Informações de Energia
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="uc_instalacao">UC Instalação</label>
-                            <input type="text" class="form-control" id="uc_instalacao" name="uc_instalacao">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="classe">Classe</label>
+                                    <select class="form-control" id="classe" name="classe">
+                                        <option value="A4" {% if cliente and cliente.classe == 'A4' %}selected{% endif %}>A4</option>
+                                        <option value="AS" {% if cliente and cliente.classe == 'AS' %}selected{% endif %}>AS</option>
+                                        <option value="B4" {% if cliente and cliente.classe == 'B4' %}selected{% endif %}>B4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="tensao">Tensão (kV)</label>
+                                    <select class="form-control" id="tensao" name="tensao">
+                                        <option value="2.3" {% if cliente and cliente.tensao == '2.3' %}selected{% endif %}>2.3</option>
+                                        <option value="13.8" {% if cliente and cliente.tensao == '13.8' %}selected{% endif %}>13.8</option>
+                                        <option value="69" {% if cliente and cliente.tensao == '69' %}selected{% endif %}>69</option>
+                                        <option value="138" {% if cliente and cliente.tensao == '138' %}selected{% endif %}>138</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="demanda">Demanda (kW)</label>
+                                    <input type="number" step="0.01" class="form-control" id="demanda" name="demanda" value="{{ cliente.demanda if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="dhc">DHC</label>
+                                    <input type="text" class="form-control" id="dhc" name="dhc" value="{{ cliente.dhc if cliente else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="medidor">Medidor</label>
+                                    <input type="text" class="form-control" id="medidor" name="medidor" value="{{ cliente.medidor if cliente else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="uc_instalacao">UC Instalação</label>
+                                    <input type="text" class="form-control" id="uc_instalacao" name="uc_instalacao" value="{{ cliente.uc_instalacao if cliente else '' }}">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="classe">Classe</label>
-                            <select class="form-control" id="classe" name="classe">
-                                <option value="">Selecione</option>
-                                <option value="LIVRE">Livre</option>
-                                <option value="ESPECIAL">Especial</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="tensao">Tensão</label>
-                            <select class="form-control" id="tensao" name="tensao">
-                                <option value="">Selecione</option>
-                                <option value="A1">A1 - 230 kV ou mais</option>
-                                <option value="A2">A2 - 88 kV a 138 kV</option>
-                                <option value="A3">A3 - 69 kV</option>
-                                <option value="A3a">A3a - 30 kV a 44 kV</option>
-                                <option value="A4">A4 - 2,3 kV a 25 kV</option>
-                                <option value="AS">AS - Baixa Tensão</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="observacoes">Observações</label>
-                    <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
-                </div>
-                
-                <div class="d-flex justify-content-between mt-3">
+
+                <div class="d-flex justify-content-between">
                     <button type="button" class="btn btn-secondary prev-tab" data-prev="#dados-comerciais-tab">Anterior</button>
+                    <button type="button" class="btn btn-primary next-tab" data-next="#migracao-api-tab">Próximo</button>
+                </div>
+            </div>
+
+            <!-- Aba Migração API -->
+            <div class="tab-pane fade" id="migracao-api">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-exchange-alt"></i> Dados para Migração API
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigo_unidade_consumidora">Código Unidade Consumidora</label>
+                                    <input type="text" class="form-control" id="codigo_unidade_consumidora" name="codigo_unidade_consumidora" value="{{ cliente.nome if cliente else '' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigo_agente_concessionaria">Código Agente Concessionária</label>
+                                    <input type="number" class="form-control" id="codigo_agente_concessionaria" name="codigo_agente_concessionaria">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="tipo_documento">Tipo Documento</label>
+                                    <select class="form-control" id="tipo_documento" name="tipo_documento">
+                                        <option value="CNPJ" {% if cliente and cliente.cnpj %}selected{% endif %}>CNPJ</option>
+                                        <option value="CPF">CPF</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="numero_documento">Número Documento</label>
+                                    <input type="text" class="form-control" id="numero_documento" name="numero_documento" value="{{ cliente.cnpj if cliente and cliente.cnpj else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigo_agente_varejista">Código Agente Varejista</label>
+                                    <input type="number" class="form-control" id="codigo_agente_varejista" name="codigo_agente_varejista">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mes_referencia">Mês Referência</label>
+                                    <input type="month" class="form-control" id="mes_referencia" name="mes_referencia">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="data_denuncia">Data Denúncia</label>
+                                    <input type="date" class="form-control" id="data_denuncia" name="data_denuncia" value="{{ cliente.data_denuncia_contrato if cliente and cliente.data_denuncia_contrato else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="codigo_perfil_varejista">Código Perfil Varejista</label>
+                                    <input type="number" class="form-control" id="codigo_perfil_varejista" name="codigo_perfil_varejista">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email_unidade_consumidora">Email Unidade Consumidora</label>
+                                    <input type="email" class="form-control" id="email_unidade_consumidora" name="email_unidade_consumidora" value="{{ cliente.email if cliente and cliente.email else '' }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="comentario">Comentário</label>
+                            <textarea class="form-control" id="comentario" name="comentario" rows="3"></textarea>
+                        </div>
+
+                        <!-- Seção para campos futuros da API -->
+                        <div class="mt-4 border-top pt-3">
+                            <h5>Informações Adicionais da API</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="status_migracao">Status Migração</label>
+                                        <input type="text" class="form-control" id="status_migracao" name="status_migracao" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="data_solicitacao">Data Solicitação</label>
+                                        <input type="datetime-local" class="form-control" id="data_solicitacao" name="data_solicitacao" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary prev-tab" data-prev="#dados-energia-tab">Anterior</button>
                     <div>
                         <button type="submit" class="btn btn-success">Salvar</button>
                         <a href="{{ url_for('listar_clientes') }}" class="btn btn-danger">Cancelar</a>
@@ -295,6 +448,26 @@ $(document).ready(function(){
     // Atualiza a barra de progresso quando muda de aba
     $('a[data-toggle="tab"]').on('shown.bs.tab', function(){
         updateProgressBar();
+    });
+
+    // Preenche automaticamente os campos da API com dados do formulário
+    $('#nome').on('blur', function() {
+        $('#codigo_unidade_consumidora').val($(this).val().substring(0, 10).toUpperCase().replace(/\s/g, ''));
+    });
+
+    $('#cnpj').on('blur', function() {
+        if ($(this).val()) {
+            $('#tipo_documento').val('CNPJ');
+            $('#numero_documento').val($(this).val());
+        }
+    });
+
+    $('#email').on('blur', function() {
+        $('#email_unidade_consumidora').val($(this).val());
+    });
+
+    $('#data_denuncia_contrato').on('change', function() {
+        $('#data_denuncia').val($(this).val());
     });
 });
 </script>
