@@ -52,7 +52,8 @@ def dashboard():
     
     return render_template('dashboard.html', 
                          clientes_ativos=clientes_ativos,
-                         ultimos_clientes=ultimos_clientes)
+                         ultimos_clientes=ultimos_clientes,
+                         clientes=clientes)  # Linha adicionada para o gráfico dinâmico
 
 @app.route('/clientes')
 def listar_clientes():

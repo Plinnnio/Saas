@@ -152,6 +152,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     $(document).ready(function() {
+        // Dados dos clientes passados do Flask para o JavaScript
+        var clientesData = JSON.parse('{{ clientes|tojson|safe }}');
+        
+        // Contar clientes por submercado
+        var submercados = {
+            'SUDESTE': 0,
+            'SUL': 0,
+            'NORDESTE': 0,
+            'NORTE': 0
+        };
+        
+        for (var i = 0; i < clientesData.length; i++) {
+            var cliente = clientesData[i];
+            if (cliente.submercado && submercados.hasOwnProperty(cliente.submercado)) {
+                submercados[cliente.submercado]++;
+            }
+        }
+        
         // Gráfico de consumo
         var ctxConsumo = document.getElementById('consumoChart').getContext('2d');
         var consumoChart = new Chart(ctxConsumo, {
@@ -171,7 +189,7 @@
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: 'top'
                     }
                 },
                 scales: {
@@ -187,9 +205,9 @@
         var submercadoChart = new Chart(ctxSubmercado, {
             type: 'doughnut',
             data: {
-                labels: ['SUDESTE', 'SUL', 'NORDESTE', 'NORTE'],
+                labels: Object.keys(submercados),
                 datasets: [{
-                    data: [45, 25, 20, 10],
+                    data: Object.values(submercados),
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.7)',
                         'rgba(54, 162, 235, 0.7)',
@@ -203,7 +221,18 @@
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'right',
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                var value = context.raw || 0;
+                                var total = context.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                var percentage = Math.round((value / total) * 100);
+                                return label + ': ' + value + ' (' + percentage + '%)';
+                            }
+                        }
                     }
                 }
             }
